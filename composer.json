@@ -1,6 +1,8 @@
 {
     "name": "matemat/type-generator",
     "description": "Generates TypeScript interfaces from laravel migrations and form requests",
+    "homepage": "https://github.com/RobertPapyan/type-generator",
+    "license": "MIT",
     "authors": [
         {
             "name": "Robert Papyan",
@@ -8,10 +10,9 @@
             "role": "Developer"
         }
     ],
-    "license": "MIT",
     "minimum-stability": "dev",
     "require": {
-        "php": "^8.0",
+        "php": "^8.2",
         "laravel/framework": "^11.0"
     },
     "autoload": {
