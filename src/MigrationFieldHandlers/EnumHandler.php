@@ -12,7 +12,7 @@ class EnumHandler implements MigrationFieldHandler
     use GetColumnName, HandleModifiers;
 
     private $field_types = [
-        'enum'
+        'enum',
     ];
 
     public function handle(string $fieldType, string $str, MigrationModel $model): bool
@@ -20,11 +20,11 @@ class EnumHandler implements MigrationFieldHandler
         if (in_array($fieldType, $this->field_types)) {
             $column_name = $this->getColumnName($str);
             $values = $this->extractEnumValues($str);
-            $model->addField( [
+            $model->addField([
                 'field_name' => $column_name,
                 'field_type' => 'enum',
                 'modifiers' => $this->handleModifiers($str),
-                'enum_values' => $values
+                'enum_values' => $values,
             ]);
 
             return true;
@@ -33,13 +33,12 @@ class EnumHandler implements MigrationFieldHandler
         return false;
     }
 
-
     private function extractEnumValues(string $str): array
     {
         // Use regex to capture the content inside the square brackets
         preg_match('/\[(.*?)\]/', $str, $matches);
 
-        if (!isset($matches[1])) {
+        if (! isset($matches[1])) {
             // Return an empty array if no match is found
             return [];
         }
@@ -55,6 +54,4 @@ class EnumHandler implements MigrationFieldHandler
 
         return $values;
     }
-
-
 }

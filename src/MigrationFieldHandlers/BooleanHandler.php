@@ -12,7 +12,7 @@ class BooleanHandler implements MigrationFieldHandler
     use GetColumnName, HandleModifiers;
 
     private $field_types = [
-       'boolean'
+        'boolean',
     ];
 
     public function handle(string $fieldType, string $str, MigrationModel $model): bool
@@ -22,7 +22,7 @@ class BooleanHandler implements MigrationFieldHandler
             $model->addField([
                 'field_name' => $column_name,
                 'field_type' => 'boolean',
-                'modifiers' => $this->handleModifiers($str)
+                'modifiers' => $this->handleModifiers($str),
             ]);
 
             return true;
@@ -30,6 +30,4 @@ class BooleanHandler implements MigrationFieldHandler
 
         return false;
     }
-
-
 }

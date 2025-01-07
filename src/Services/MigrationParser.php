@@ -2,9 +2,6 @@
 
 namespace Matemat\TypeGenerator\Services;
 
-
-
-use Illuminate\Support\Facades\File;
 use Matemat\TypeGenerator\Interfaces\FileParser;
 use Matemat\TypeGenerator\MigrationFieldHandlers\BooleanHandler;
 use Matemat\TypeGenerator\MigrationFieldHandlers\EnumHandler;
@@ -20,7 +17,9 @@ use Symfony\Component\Finder\SplFileInfo;
 class MigrationParser implements FileParser
 {
     use CommentRemover;
+
     private array $handlers = [];
+
     public function __construct()
     {
         $this->handlers = [
@@ -30,67 +29,78 @@ class MigrationParser implements FileParser
             new BooleanHandler,
             new EnumHandler,
             new MorphHandler,
-            new TimestampHandler
+            new TimestampHandler,
         ];
     }
 
-    public function parse(SplFileInfo $file):array{
+    public function parse(SplFileInfo $file): array
+    {
         $models = [];
         $content = $file->getContents();
         $content = $this->removeComment($content);
         $builders = $this->findBuilders($content);
         // Foreach builder (Schema::creat|table)
-        foreach($builders as $builder){
+        foreach ($builders as $builder) {
             $models[] = $this->convertToModel($builder);
         }
+
         return $models;
     }
 
-    //Schema::create | Schema::table etc ...
-    private function findBuilders($content):array{
+    // Schema::create | Schema::table etc ...
+    private function findBuilders($content): array
+    {
         $builders = [];
         $pattern = '/Schema::(create|table)\(.*?\{.*?\}\);/s';
         preg_match_all($pattern, $content, $matches);
 
-        foreach($matches[0] as $content){
+        foreach ($matches[0] as $content) {
             preg_match("/['\"]([^'\"]+)['\"]/", $content, $table_name);
             $builders[] = [
                 'content' => $content,
-                'table' => $table_name[1] ?? null
+                'table' => $table_name[1] ?? null,
             ];
         }
-        foreach($matches[1] as $index => $type){
+        foreach ($matches[1] as $index => $type) {
             $builders[$index]['type'] = $type;
         }
+
         return $builders;
     }
 
+    private function convertToModel($builder): MigrationModel
+    {
+        $builder['type'] = $builder['type'] == 'table' ? 'update' : $builder['type'];
 
-    private function convertToModel($builder) : MigrationModel{
-            $builder['type'] = $builder['type'] == 'table' ? 'update' : $builder['type'];
+        $model = new MigrationModel($builder['table'], $builder['type']);
+        preg_match_all('/\$table->[^;]+;/', $builder['content'], $matches);
+        foreach ($matches[0] as $match) {
+            $this->handleField($match, $model);
+        }
 
-            $model = new MigrationModel($builder['table'],$builder['type']);
-            preg_match_all('/\$table->[^;]+;/', $builder['content'], $matches);
-            foreach($matches[0] as $match){
-               $this->handleField($match,$model);
-            }
-            return $model;
+        return $model;
     }
 
-    private  function handleField(string $str, MigrationModel $model)
+    private function handleField(string $str, MigrationModel $model)
     {
-        preg_match('/\$table->([^\(]+)/',$str,$field_type);
+        preg_match('/\$table->([^\(]+)/', $str, $field_type);
         $field_type = $field_type[1] ?? null;
-        if($field_type == null || $this->isIndex($field_type))return;
+        if ($field_type == null || $this->isIndex($field_type)) {
+            return;
+        }
 
-        foreach($this->handlers as $handler){
-            $handeled = $handler->handle($field_type,$str,$model);
-            if($handeled)break;
+        foreach ($this->handlers as $handler) {
+            $handeled = $handler->handle($field_type, $str, $model);
+            if ($handeled) {
+                break;
+            }
         }
     }
 
-    private function  isIndex($fieldType) : bool {
-        $indexes = ['primary','unique','index','fullText','spatialIndex'];
-        return in_array($fieldType,$indexes);
+    private function isIndex($fieldType): bool
+    {
+        $indexes = ['primary', 'unique', 'index', 'fullText', 'spatialIndex'];
+
+        return in_array($fieldType, $indexes);
     }
 }

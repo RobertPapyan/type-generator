@@ -10,57 +10,58 @@ use Matemat\TypeGenerator\Traits\HandleModifiers;
 class TimestampHandler implements MigrationFieldHandler
 {
     use GetColumnName, HandleModifiers;
-    //nullableTimestamps, timestampsTz, timestamps, year
+
+    // nullableTimestamps, timestampsTz, timestamps, year
     private $field_types = [
-       'dateTimeTz','dateTime','date','softDeletesTz','softDeletes','timeTz','time','timestampTz','timestamp',
+        'dateTimeTz', 'dateTime', 'date', 'softDeletesTz', 'softDeletes', 'timeTz', 'time', 'timestampTz', 'timestamp',
     ];
 
     public function handle(string $fieldType, string $str, MigrationModel $model): bool
     {
         if (in_array($fieldType, $this->field_types)) {
             $column_name = $this->getColumnName($str);
-            if(!$column_name && ($fieldType == 'softDeletes' || $fieldType == 'softDeletesTz')){
+            if (! $column_name && ($fieldType == 'softDeletes' || $fieldType == 'softDeletesTz')) {
                 $column_name = 'deleted_at';
             }
             $model->addField([
                 'field_name' => $column_name,
                 'field_type' => 'string',
-                'modifiers' => $this->handleModifiers($str)
+                'modifiers' => $this->handleModifiers($str),
             ]);
 
             return true;
         }
 
-        if($fieldType == 'timestampsTz' || $fieldType == 'timestamps' || $fieldType == 'nullableTimestamps'){
+        if ($fieldType == 'timestampsTz' || $fieldType == 'timestamps' || $fieldType == 'nullableTimestamps') {
             $modifiers = $this->handleModifiers($str);
-            if($fieldType == 'nullableTimestamps'){
-                array_push($modifiers,'nullable');
+            if ($fieldType == 'nullableTimestamps') {
+                array_push($modifiers, 'nullable');
             }
             $model->addField([
                 'field_name' => 'created_at',
                 'field_type' => 'string',
-                'modifiers' => $modifiers
+                'modifiers' => $modifiers,
             ]);
             $model->addField([
                 'field_name' => 'updated_at',
                 'field_type' => 'string',
-                'modifiers' => $modifiers
+                'modifiers' => $modifiers,
             ]);
+
             return true;
         }
 
-        if($fieldType == 'year'){
+        if ($fieldType == 'year') {
             $column_name = $this->getColumnName($str);
             $model->addField([
                 'field_name' => $column_name,
                 'field_type' => 'number',
-                'modifiers' => $this->handleModifiers($str)
+                'modifiers' => $this->handleModifiers($str),
             ]);
+
             return true;
         }
 
         return false;
     }
-
-
 }

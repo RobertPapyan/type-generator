@@ -12,8 +12,8 @@ class NumberHandler implements MigrationFieldHandler
     use GetColumnName, HandleModifiers;
 
     private $field_types = [
-        'bigIntger','decimal','double','float','integer','mediumInteger','smallInteger','tinyInteger','unsignedBigInteger','unsignedInteger',
-        'unsignedMediumInteger', 'unsignedSmallInteger','unsignedTinyInteger'
+        'bigIntger', 'decimal', 'double', 'float', 'integer', 'mediumInteger', 'smallInteger', 'tinyInteger', 'unsignedBigInteger', 'unsignedInteger',
+        'unsignedMediumInteger', 'unsignedSmallInteger', 'unsignedTinyInteger',
     ];
 
     public function handle(string $fieldType, string $str, MigrationModel $model): bool
@@ -24,7 +24,7 @@ class NumberHandler implements MigrationFieldHandler
             $model->addField([
                 'field_name' => $column_name,
                 'field_type' => 'number',
-                'modifiers' => $this->handleModifiers($str)
+                'modifiers' => $this->handleModifiers($str),
             ]);
 
             return true;
@@ -32,6 +32,4 @@ class NumberHandler implements MigrationFieldHandler
 
         return false;
     }
-
-
 }

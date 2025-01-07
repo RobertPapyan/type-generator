@@ -2,10 +2,11 @@
 
 namespace Matemat\TypeGenerator\Traits;
 
-//Need to be tested
+// Need to be tested
 trait GetColumnName
 {
-    public function getColumnName($str){
+    public function getColumnName($str)
+    {
         $openingBracketPos = strpos($str, '(');
         $closingBracketPos = strpos($str, ')');
         // If no opening bracket is found, return null
@@ -14,7 +15,7 @@ trait GetColumnName
         }
 
         // Extract the substring after the opening bracket and before closing bracket
-        $substring = substr($str, $openingBracketPos + 1,$closingBracketPos - $openingBracketPos - 1);
+        $substring = substr($str, $openingBracketPos + 1, $closingBracketPos - $openingBracketPos - 1);
 
         // Match either single or double quoted text
         if (preg_match("/['\"]\s*([^'\"]+)\s*['\"]/", $substring, $matches)) {
@@ -23,5 +24,4 @@ trait GetColumnName
 
         return null; // Default to null if no valid content is found
     }
-
 }

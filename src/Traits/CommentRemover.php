@@ -4,7 +4,7 @@ namespace Matemat\TypeGenerator\Traits;
 
 trait CommentRemover
 {
-    function removeComment($content): string
+    public function removeComment($content): string
     {
         // Regular expression to match PHP comments
         $pattern = [

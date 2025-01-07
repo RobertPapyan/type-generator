@@ -5,7 +5,6 @@ namespace Matemat\TypeGenerator\Console;
 use Illuminate\Console\Command;
 use Matemat\TypeGenerator\TypeGenerator;
 
-
 class GenerateTypes extends Command
 {
     /**
@@ -13,7 +12,7 @@ class GenerateTypes extends Command
      *
      * @var string
      */
-    protected $signature = 'app:generate-types';
+    protected $signature = 'matemat:generate-types';
 
     /**
      * The console command description.
@@ -28,7 +27,7 @@ class GenerateTypes extends Command
     public function handle()
     {
 
-        $generator = app()->makeWith(TypeGenerator::class,['config' =>config('type-generator')]);
+        $generator = app()->make(TypeGenerator::class);
         $generator->generate();
         $this->info('Interfaces generated successfully!');
     }

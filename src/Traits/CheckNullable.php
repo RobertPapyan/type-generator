@@ -4,9 +4,12 @@ namespace Matemat\TypeGenerator\Traits;
 
 trait CheckNullable
 {
-    public function  checkNullable($str) : bool {
+    public function checkNullable($str): bool
+    {
 
-        if(preg_match('/->nullable\(/',$str))return true;
+        if (preg_match('/->nullable\(/', $str)) {
+            return true;
+        }
 
         return false;
     }
