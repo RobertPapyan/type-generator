@@ -165,6 +165,10 @@ class RequestParser implements FileParser
                     continue;
                 }
                 if(!in_array($content[$i],$allowedChars) && !$isDeleting){
+                    if($content[$i] == '.'){
+                        $content[$i] = ',';
+                        continue;
+                    }
                     $start = $i;
                     $deleteLevel = $stack->count();
                     $isDeleting = true;
